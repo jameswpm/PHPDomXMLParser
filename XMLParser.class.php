@@ -33,6 +33,16 @@ use DOMDocument;
 class XMLParser extends DOMDocument
 {
 	/**
+	 * @var string $namespaces The namespaces of the Document
+	 */
+	private $namespaces;
+	/**
+	 * @var string $xsdToValidate File or directory with XSD to validate the document
+	 */
+	protected $xsdToValidate;
+
+
+	/**
      * Method __construct
      * Creates a DomDocument and set preserveWhiteSpace to false
      * @author James Miranda <jameswpm@gmail.com>
@@ -44,6 +54,20 @@ class XMLParser extends DOMDocument
         parent::__construct($version, $encoding);
         $this->preserveWhiteSpace = false;
 		$this->formatOutput = true;
+    }
+
+    /**
+     * Method setXsdToValidate
+     * Sets a XSD file or Directory with multiple XSDs to made the validation
+     * @author James Miranda <jameswpm@gmail.com>
+     * @param string $xsdFileOrDir
+     */
+    public setXsdToValidate ($xsdFileOrDir)
+    {
+        if (!file_exists($xsdFileOrDir)) {
+            throw new Exception("Invalid File or Directory. XSD not found", 1);            
+        }
+        $this->xsdToValidate = $xsdFileOrDir;
     }
 
 }
