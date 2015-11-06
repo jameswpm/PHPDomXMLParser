@@ -29,11 +29,12 @@ use DOMDocument;
  * Get the XML from a file or string and creates a DOMDocument
  * @author James Miranda <jameswpm@gmail.com>
  * @package Parser
+ * @license Copyright (c) 2015 James Miranda with MIT License
  */
 class XMLParser extends DOMDocument
 {
 	/**
-	 * @var string $namespaces The namespaces of the Document
+	 * @var string|array $namespaces The namespaces of the Document
 	 */
 	private $namespaces;
 	/**
@@ -65,9 +66,43 @@ class XMLParser extends DOMDocument
     public setXsdToValidate ($xsdFileOrDir)
     {
         if (!file_exists($xsdFileOrDir)) {
-            throw new Exception("Invalid File or Directory. XSD not found", 1);            
+            throw new Exception("Invalid File or Directory. XSD not found");            
         }
         $this->xsdToValidate = $xsdFileOrDir;
+    }
+
+    /**
+     * Method validateXML
+     * Validate the XML against a XSD
+     * @author James Miranda <jameswpm@gmail.com>
+     * @param string $xsdToValidateFilename represents the file in the $this->xsdToValidate. Defaul is null
+     * @throws Exception
+     */
+    public validateXML($xsdToValidateFilename = null) 
+    {
+        if (is_dir($this->xsdToValidate) && is_null($xsdToValidateFilename)) {
+            throw new Exception ('The default validation is a directory. Please, set a file to validate');
+        }
+
+        if (is_dir($this->xsdToValidate)){
+            if (!$this->schemaValidate($this->xsdToValidate . DIRECTORY_SEPARATOR . $xsdToValidateFilename)) {
+                $exception = new Exception ('The XML sent is invalid. Does note fill the XSD standards');
+                /*foreach(libxml_get_errors() as $error){
+                    $exception->setError($error->message);
+                }*/
+                throw $exception;
+            }
+        }
+
+        if (is_file($this->xsdToValidate)) {
+            if (!$this->schemaValidate($this->xsdToValidate)) {
+                $exception = new Exception ('The XML sent is invalid. Does note fill the XSD standards');
+                /*foreach(libxml_get_errors() as $error){
+                    $exception->setError($error->message);
+                }*/
+                throw $exception;
+            }
+        }
     }
 
 }
